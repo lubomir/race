@@ -37,7 +37,7 @@ colored :: Int -> B.ByteString -> B.ByteString
 colored i d = let col = colors !! i
               in "\ESC[" <> col <> "m" <> d <> "\ESC[0m\n"
   where
-    colors = cycle $ ["32", "33", "35", "36"]
+    colors = cycle ["32", "33", "35", "36"]
 
 reader :: Chan Msg -> Int -> IO ()
 reader _ 0 = return ()
