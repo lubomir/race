@@ -1,14 +1,14 @@
 name:                race
 version:             0.1.0.0
-synopsis:            Simple project template from stack
+synopsis:            Run commands in parallel wil colorized output
 description:         Please see README.md
-homepage:            http://github.com/githubuser/race#readme
+homepage:            http://github.com/lubomir/race#readme
 license:             BSD3
 license-file:        LICENSE
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2010 Author Here
-category:            Web
+author:              Lubomír Sedlář
+maintainer:          lubomir.sedlar@gmail.com
+copyright:           2016 Lubomír Sedlář
+category:            Development
 build-type:          Simple
 cabal-version:       >=1.10
 
