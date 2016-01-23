@@ -15,6 +15,8 @@ import           System.Environment       (getArgs)
 
 data Msg = Quit | Msg Int B.ByteString
 
+{-| Run @cmd@ and send both its output and stdout into a duplicate of @chan'@.
+ -}
 runProcess :: Chan Msg -> Int -> String -> IO ()
 runProcess chan' i cmd = do
     chan <- dupChan chan'
@@ -33,12 +35,17 @@ runProcess chan' i cmd = do
     writeChan chan Quit
 
 
+{-| Wrap a bytestring in ANSI color sequences.
+ -}
 colored :: Int -> B.ByteString -> B.ByteString
 colored i d = let col = colors !! i
               in "\ESC[" <> col <> "m" <> d <> "\ESC[0m\n"
   where
     colors = cycle ["34", "36", "35", "32", "33", "31"]
 
+{-| Read everything from the channel and print it. This function returns only
+ - when all processes send a Quit message.
+ -}
 reader :: Chan Msg -> Int -> IO ()
 reader _ 0 = return ()
 reader chan num = do
