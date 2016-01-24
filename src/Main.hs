@@ -15,12 +15,10 @@ import           System.Environment       (getArgs)
 
 data Msg = Quit | Msg Int B.ByteString
 
-{-| Run @cmd@ and send both its output and stdout into a duplicate of @chan'@.
+{-| Run @cmd@ and send both its output and stdout into the @chan'@.
  -}
 runProcess :: Chan Msg -> Int -> String -> IO ()
-runProcess chan' i cmd = do
-    chan <- dupChan chan'
-
+runProcess chan i cmd = do
     (ClosedStream, fromProcess, fromProcessErr, cph) <-
         streamingProcess (shell ("stdbuf -oL -eL " <> cmd))
 
@@ -59,8 +57,9 @@ reader chan num = do
 main :: IO ()
 main = do
     args <- getArgs
-    chan <- newChan
+    readEnd <- newChan
+    writeEnd <- dupChan readEnd
 
-    mapM_ (forkIO . uncurry (runProcess chan)) (zip [0..] args)
+    mapM_ (forkIO . uncurry (runProcess writeEnd)) (zip [0..] args)
 
-    reader chan (length args)
+    reader readEnd (length args)
