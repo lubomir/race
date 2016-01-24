@@ -7,15 +7,11 @@ import qualified Data.ByteString          as B
 import           Data.Conduit             (($$), (=$))
 import qualified Data.Conduit.Binary      as CB
 import qualified Data.Conduit.List        as CL
-import           Data.Conduit.Process     (ClosedStream (..),
-                                           CreateProcess (..), StdStream (..),
-                                           UseProvidedHandle (..), shell,
+import           Data.Conduit.Process     (ClosedStream (..), shell,
                                            streamingProcess,
                                            waitForStreamingProcess)
 import           Data.Monoid              ((<>))
 import           System.Environment       (getArgs)
-import           System.Posix.IO          (fdToHandle)
-import           System.Posix.Terminal    (openPseudoTerminal)
 
 data Msg = Quit | Msg Int B.ByteString
 
@@ -23,20 +19,15 @@ data Msg = Quit | Msg Int B.ByteString
  -}
 runProcess :: Chan Msg -> Int -> String -> IO ()
 runProcess chan i cmd = do
-    (master', slave') <- openPseudoTerminal
-    master <- fdToHandle master'
-    slave <- fdToHandle slave'
-
-    let cp = (shell cmd) {std_out = UseHandle master}
-
-    (ClosedStream, UseProvidedHandle, fromProcessErr, cph) <-
-        streamingProcess cp
+    let cmd' = "script -qf /dev/null -c \""<>cmd<>"\""
+    (ClosedStream, fromProcess, fromProcessErr, cph) <-
+        streamingProcess (shell cmd')
 
     let output h = CB.sourceHandle h $$ CB.lines =$ CL.mapM_
             (writeChan chan . Msg i)
 
     _ <- runConcurrently $
-        Concurrently (output slave) *>
+        Concurrently (output fromProcess) *>
         Concurrently (output fromProcessErr) *>
         Concurrently (waitForStreamingProcess cph)
 
