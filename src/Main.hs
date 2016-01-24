@@ -38,9 +38,9 @@ runProcess chan i cmd = do
  -}
 colored :: Int -> B.ByteString -> B.ByteString
 colored i d = let col = colors !! i
-              in "\ESC[" <> col <> "m" <> d <> "\ESC[0m\n"
+              in "\ESC[" <> col <> ";1m" <> d <> "\ESC[0m\n"
   where
-    colors = cycle ["34", "36", "35", "32", "33", "31"]
+    colors = cycle ["36", "35", "32", "33", "34", "31"]
 
 {-| Read everything from the channel and print it. This function returns only
  - when all processes send a Quit message.
