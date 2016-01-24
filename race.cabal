@@ -21,4 +21,5 @@ executable race
                      , conduit
                      , conduit-extra
                      , bytestring
+                     , unix
   ghc-options:         -Wall -threaded
