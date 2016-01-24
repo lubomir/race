@@ -19,7 +19,7 @@ data Msg = Quit | Msg Int B.ByteString
  -}
 runProcess :: Chan Msg -> Int -> String -> IO ()
 runProcess chan i cmd = do
-    let cmd' = "script -qf /dev/null -c \"" <> cmd <> "\""
+    let cmd' = "script -qfc \"" <> cmd <> "\" /dev/null"
     (ClosedStream, fromProcess, fromProcessErr, cph) <-
         streamingProcess (shell cmd')
 
